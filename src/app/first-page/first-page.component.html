@@ -1,0 +1,212 @@
+<div class="container-fluid">
+  <nav class="navbar z-2 bg-primary navbar-expand-lg w-100">
+    <div class="container d-flex justify-content-between">
+      <a class="navbar-brand text-light" href="#">Stock Search</a>
+      <div class="links w-25 d-flex justify-content-evenly">
+        <a href="#" class="watchlist text-light text-decoration-none"
+          >Watchlist</a
+        ><a
+          routerLink="/portfolio"
+          class="portfolio text-light text-decoration-none"
+          >Portfolio
+        </a>
+      </div>
+    </div>
+  </nav>
+  <div class="stockSearch my-5 d-flex flex-column align-items-center">
+    <h1 class="z-2">Stock Trading</h1>
+    <input
+      type="text"
+      class="my-2 z-2 w-25 rounded-4 px-3"
+      placeholder="Enter stock ticker symbol"
+      [(ngModel)]="stockSymbol"
+      (change)="onSymbolChange(stockSymbol)"
+    />
+  </div>
+  <div class="basicInfo d-flex align-items-center justify-content-evenly w-100">
+    <div
+      class="companyName z-2 w-25 d-flex flex-column justify-content-center align-items-center"
+    >
+      <div class="buySell my-auto g-4">
+        <h1>{{ companyDetails?.name }}</h1>
+        <div class="btns d-flex justify-content-center">
+          <button class="btn m-1 btn-primary" (click)="onBuy(1)">Buy</button
+          ><button class="btn m-1 btn-danger">Sell</button>
+        </div>
+      </div>
+      <h5>{{ companyDetails?.ticker }}</h5>
+      <h5>NASDAQ NMS-GLOBAL MARKET</h5>
+    </div>
+    <div
+      class="logo w-25 d-flex z-2 flex-column justify-content-center align-items-center"
+    >
+      <i class="logo"></i>
+      <p>Market Open</p>
+    </div>
+    <div
+      class="prices w-25 d-flex z-2 flex-column justify-content-center align-items-center"
+    >
+      <h1><i></i> {{ currentPrice$ | async }}</h1>
+      <h5>({{ changePerc$ | async }}%)</h5>
+      <h5>08.12.2008.</h5>
+    </div>
+  </div>
+  <ul class="nav nav-tabs w-100" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link active"
+        id="home-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#home-tab-pane"
+        type="button"
+        role="tab"
+        aria-controls="home-tab-pane"
+        aria-selected="true"
+        (click)="showTabs()"
+      >
+        Home
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        id="profile-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#profile-tab-pane"
+        type="button"
+        role="tab"
+        aria-controls="profile-tab-pane"
+        aria-selected="false"
+        (click)="hideTab()"
+      >
+        Profile
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        id="contact-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#contact-tab-pane"
+        type="button"
+        role="tab"
+        aria-controls="contact-tab-pane"
+        aria-selected="false"
+        (click)="hideTab()"
+      >
+        Contact
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        id="disabled-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#disabled-tab-pane"
+        type="button"
+        role="tab"
+        aria-controls="disabled-tab-pane"
+        aria-selected="false"
+        (click)="hideTab()"
+      >
+        More
+      </button>
+    </li>
+  </ul>
+  <div class="tab-content z-2" id="myTabContent">
+    <div
+      *ngIf="showTab"
+      class="tab-pane d-flex align-items-center justify-content-center flex-column fade show active"
+      id="home-tab-pane"
+      role="tabpanel"
+      aria-labelledby="home-tab"
+      tabindex="0"
+    >
+      <div class="btn mt-5 d-flex">
+        <button class="btn btn-info" (click)="getSevenDays()">7days</button
+        ><button class="btn btn-info" (click)="getMonth()">30days</button
+        ><button class="btn btn-info" (click)="getSixMonths()">
+          half year
+        </button>
+      </div>
+      <div class="chart" *ngIf="historicalData.last7Days.length && sevenDays">
+        <h3>{{ date }}</h3>
+        <canvas
+          baseChart
+          [datasets]="[lineChartData[0]]"
+          [labels]="lineChartLabels"
+          [options]="lineChartOptions"
+          [type]="'line'"
+        >
+        </canvas>
+      </div>
+
+      <div class="chart" *ngIf="historicalData.lastMonth.length && month">
+        <h3>Last Month</h3>
+        <canvas
+          baseChart
+          [datasets]="[lineChartData[1]]"
+          [labels]="lineChartLabels"
+          [options]="lineChartOptions"
+          [type]="'line'"
+        >
+        </canvas>
+      </div>
+
+      <div class="chart" *ngIf="historicalData.last6Months.length && lastSix">
+        <h3>Last 6 Months</h3>
+        <canvas
+          baseChart
+          [datasets]="[lineChartData[2]]"
+          [labels]="lineChartLabels"
+          [options]="lineChartOptions"
+          [type]="'line'"
+        >
+        </canvas>
+      </div>
+    </div>
+    <div
+      class="tab-pane fade"
+      id="profile-tab-pane"
+      role="tabpanel"
+      aria-labelledby="profile-tab"
+      tabindex="0"
+    >
+      <div class="newsS">
+        <ng-container *ngFor="let article of newsArticle$ | async">
+          <div class="news">
+            <div class="title">
+              <img class="" [src]="article.image_url" alt="" />
+              <h5 class="">{{ article.title }}</h5>
+            </div>
+            <a [href]="article.article_url">
+              <div class="content">{{ article.description }}</div>
+            </a>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div
+      class="tab-pane fade"
+      id="contact-tab-pane"
+      role="tabpanel"
+      aria-labelledby="contact-tab"
+      tabindex="0"
+    >
+      <div class="container">
+        <p>
+          {{ companyDetails?.description }}
+        </p>
+      </div>
+    </div>
+    <div
+      class="tab-pane fade"
+      id="disabled-tab-pane"
+      role="tabpanel"
+      aria-labelledby="disabled-tab"
+      tabindex="0"
+    >
+      <h5>sdfljsdfkl</h5>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+<div class="container">
+  <div class="header">
+    <h2>My Portfolio</h2>
+    <h3>Ballance:{{ balance$ | async }}$</h3>
+  </div>
+  <div class="card">
+    <div class="card-title">
+      <h5></h5>
+    </div>
+    <ng-container *ngFor="let stock of yourStocks | async">
+      <div class="card-content d-flex flex-wrap gap-1">
+        <h1>{{ stock.name }}</h1>
+        <p>Quantity:{{ stock.amount }}</p>
+        <p>Total Cost:{{ stock.totalCost }}</p>
+        <p>Current Price:{{ stock.price }}</p>
+        <p>Market Value:{{ stock.price * stock.amount }}</p>
+      </div>
+    </ng-container>
+  </div>
+</div>
