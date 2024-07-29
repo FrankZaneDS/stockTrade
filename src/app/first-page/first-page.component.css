@@ -1,10 +1,10 @@
 a {
   text-decoration: none;
 }
-.container-fluid {
+.section {
   position: relative;
 }
-.container-fluid::before {
+.section::before {
   content: "";
   z-index: 1;
   top: 0;
@@ -13,7 +13,7 @@ a {
   right: 0;
   opacity: 0.3;
   background: url("../assets/stock-market-investment-trading-business-candlestick-chart-chart-on-dark-background-design-bullish-point-trend-chart-forex-background-free-vector.jpg");
-  min-height: 100dvh;
+
   position: absolute;
 }
 ul > li {
@@ -52,4 +52,11 @@ ul > li {
     height: 200px;
     width: 100%;
   }
+}
+
+.about {
+  margin-top: 50px;
+  display: flex;
+  text-align: justify;
+  min-height: 30vh;
 }

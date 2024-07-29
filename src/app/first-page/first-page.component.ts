@@ -4,8 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BaseChartDirective } from 'ng2-charts';
-import { EMPTY, first, map, Observable, switchMap, take } from 'rxjs';
-import { RouterLink } from '@angular/router';
+import { map, Observable, shareReplay } from 'rxjs';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-first-page',
@@ -21,16 +21,20 @@ import { RouterLink } from '@angular/router';
   styleUrls: ['./first-page.component.css'],
 })
 export class FirstPageComponent implements OnInit {
-  stockData: any;
-  stockSymbol: string = 'AAPL';
   dataService = inject(DataService);
+  route = inject(ActivatedRoute);
+  router = inject(Router);
+
+  yourStock$ = this.dataService.yourStocks$;
+  data$: Observable<any>;
+  stockSymbol: string = this.route.snapshot.params.symbol;
   stockPrice: number;
   changePercent: any;
-  currentPrice$ = this.dataService.currentPrice$;
+  currentPrice$: Observable<number>;
   changePerc$ = new Observable<number>();
   newsArticle$ = new Observable<newsResults[]>();
   showTab = true;
-  companyDetails: Company;
+  companyDetails$: Observable<Company>;
   balance$ = this.dataService.balance$;
 
   price: number;
@@ -62,25 +66,29 @@ export class FirstPageComponent implements OnInit {
   hideTab() {
     this.showTab = false;
   }
-  onSymbolChange(newSymbol: string) {
-    this.stockSymbol = newSymbol;
-    this.getStockPrice();
-    this.getNews();
+  onSymbolChange(symbol: string) {
+    this.router.navigate([], { queryParams: { symbol } });
     this.getCompanyDetails();
     this.getSevenDays();
   }
 
   getStockPrice() {
-    this.currentPrice$ = this.dataService
-      .getCurrentPrice(this.stockSymbol)
-      .pipe(
-        map((data) => {
-          return Number(data.c);
-        })
-      );
-    this.changePerc$ = this.dataService.getCurrentPrice(this.stockSymbol).pipe(
+    const params = {
+      symbol: this.stockSymbol,
+      token: this.dataService.pinhubApi,
+    };
+    this.data$ = this.dataService
+      .getCurrentPrice(params)
+      .pipe(shareReplay({ refCount: true }));
+
+    this.currentPrice$ = this.data$.pipe(
       map((data) => {
-        return Number(data.dp);
+        return +data.c;
+      })
+    );
+    this.changePerc$ = this.data$.pipe(
+      map((data) => {
+        return +data.dp;
       })
     );
   }
@@ -94,10 +102,11 @@ export class FirstPageComponent implements OnInit {
   }
 
   getCompanyDetails() {
-    this.dataService
+    this.companyDetails$ = this.dataService
       .getCompanyDetails(this.stockSymbol)
-      .pipe(map((data) => data.results))
-      .subscribe((data) => (this.companyDetails = data));
+      .pipe(map((data) => data.results));
+    this.getStockPrice();
+    this.getNews();
   }
 
   getSevenDays() {
@@ -178,114 +187,58 @@ export class FirstPageComponent implements OnInit {
         );
       });
   }
-  // onBuy(amount: number) {
-  //   let value: number;
-  //   this.currentPrice$.subscribe((data) => {
-  //     console.log(data);
-  //     setTimeout(() => {
-  //       value = data;
-  //       console.log(value);
-  //       const oldBalance = this.balance$.getValue();
-  //       const newBalance = oldBalance - Number(value) * amount;
-  //       this.balance$.next(newBalance);
-  //       console.log(newBalance);
 
-  //       const yourStock: YourStocks = {
-  //         name: this.companyDetails.name,
-  //         amount: amount,
-  //         symbol: this.companyDetails.ticker,
-  //         price: value,
-  //         totalCost: value * amount,
-  //       };
-  //       let oldStocks: YourStocks[] = [];
-
-  //       this.dataService.yourStocks$.subscribe((data) => {
-  //         oldStocks = data;
-  //         console.log(data);
-  //       });
-  //       oldStocks.map((data) => {
-  //         if (data.name == yourStock.name) {
-  //           data.amount = yourStock.amount +1;
-  //           console.log('sdfd');
-  //         } else {
-  //           oldStocks.push(yourStock);
-  //           console.log('dsds');
-  //         }
-  //       });
-  //       console.log(oldStocks);
-  //       this.dataService.yourStocks$.next(oldStocks);
-  //     }, 2000);
-  //   });
-  // }
-  onBuy(amount: number) {
+  onBuy(
+    amount: number,
+    name: string,
+    ticker: string,
+    price: number,
+    yourStocks: YourStocks[]
+  ) {
     let yourStock: YourStocks;
 
     // Dobavljanje trenutne cene
-    this.currentPrice$
-      .pipe(
-        first(), // uzimamo samo prvu vrednost jer nas samo prva cena zanima za kupovinu
-        switchMap((data: number) => {
-          const value = data;
-          const oldBalance = this.balance$.getValue();
-          const newBalance = oldBalance - Number(value) * amount;
 
-          if (newBalance < 0) {
-            console.error('Insufficient funds.');
-            return EMPTY; // Prekini lanac ako nema dovoljno sredstava
-          }
+    const oldBalance = this.balance$.getValue();
+    const newBalance = oldBalance - price * amount;
 
-          // Ažuriranje balansa
-          this.balance$.next(newBalance);
+    if (newBalance < 0) {
+      console.error('Insufficient funds.');
+      return; // Prekini lanac ako nema dovoljno sredstava
+    }
 
-          // Kreiranje objekta za kupovinu akcija
-          yourStock = {
-            name: this.companyDetails.name,
-            amount: amount,
-            symbol: this.companyDetails.ticker,
-            price: value,
-            totalCost: value * amount,
-          };
+    // Ažuriranje balansa
+    this.balance$.next(newBalance);
 
-          // Emitovanje novih akcija
-          return this.dataService.yourStocks$.pipe(
-            take(1), // uzimamo samo prvu vrednost
-            map((oldStocks: YourStocks[]) => {
-              const existingStockIndex = oldStocks.findIndex(
-                (stock) => stock.symbol === yourStock.symbol
-              );
+    // Kreiranje objekta za kupovinu akcija
+    yourStock = {
+      name,
+      amount,
+      symbol: ticker,
+      price,
+      totalCost: price * amount,
+      // currentValue: price * amount,
+    };
 
-              if (existingStockIndex !== -1) {
-                // Ako već postoji, povećaj količinu
-                oldStocks[existingStockIndex].amount += amount;
-                oldStocks[existingStockIndex].totalCost += amount * value;
-              } else {
-                // Inače, dodaj novu akciju
-                oldStocks.push(yourStock);
-              }
+    // Emitovanje novih akcija
 
-              return oldStocks;
-            })
-          );
-        })
-      )
-      .subscribe(
-        (updatedStocks: YourStocks[]) => {
-          // Emitovanje ažuriranih akcija
-          this.dataService.yourStocks$.next(updatedStocks);
-          console.log('Stocks updated:', updatedStocks);
-        },
-        (error) => {
-          console.error('Error buying stocks:', error);
-        }
-      );
+    const existingStockIndex = yourStocks.findIndex(
+      (stock) => stock.symbol === yourStock.symbol
+    );
+
+    if (existingStockIndex !== -1) {
+      // Ako već postoji, povećaj količinu
+      yourStocks[existingStockIndex].amount += amount;
+      yourStocks[existingStockIndex].totalCost += amount * price;
+    } else {
+      // Inače, dodaj novu akciju
+      yourStocks.push(yourStock);
+    }
+
+    this.dataService.yourStocks$.next(yourStocks);
   }
 
-  ngOnInit(): void {
-    this.getStockPrice();
-    this.getNews();
-    this.getCompanyDetails();
-    this.getSevenDays();
-
-    // this.currentPrice$.subscribe((data) => console.log(data));
-  }
+  ngOnInit(): void {}
 }
+//moment.js
+//interseptor za dodavanje tokena uz svaki poziv

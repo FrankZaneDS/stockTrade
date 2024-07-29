@@ -13,48 +13,72 @@
       </div>
     </div>
   </nav>
-  <div class="stockSearch my-5 d-flex flex-column align-items-center">
+  <div
+    class="stockSearch my-5 d-flex justify-content-center flex-column align-items-center"
+  >
     <h1 class="z-2">Stock Trading</h1>
     <input
       type="text"
       class="my-2 z-2 w-25 rounded-4 px-3"
       placeholder="Enter stock ticker symbol"
       [(ngModel)]="stockSymbol"
-      (change)="onSymbolChange(stockSymbol)"
+      style="width: 300px"
+      (keyup.enter)="onSymbolChange(stockSymbol)"
     />
   </div>
-  <div class="basicInfo d-flex align-items-center justify-content-evenly w-100">
-    <div
-      class="companyName z-2 w-25 d-flex flex-column justify-content-center align-items-center"
-    >
-      <div class="buySell my-auto g-4">
-        <h1>{{ companyDetails?.name }}</h1>
-        <div class="btns d-flex justify-content-center">
-          <button class="btn m-1 btn-primary" (click)="onBuy(1)">Buy</button
-          ><button class="btn m-1 btn-danger">Sell</button>
+  @if (companyDetails$ |async; as companyDetails) {
+  <div *ngIf="companyDetails" class="section d-flex flex-column">
+    <div class="basicInfo d-flex mb-5 justify-content-evenly w-100">
+      <div
+        class="companyName z-2 w-25 d-flex flex-column justify-content-center align-items-center"
+      >
+        <div
+          class="buySell my-auto g-4 border-1 rounded-5 bg-body-secondary p-5 d-flex flex-column justify-content-center align-items-center"
+        >
+          <h1>{{ companyDetails?.name }}</h1>
+          @if (currentPrice$ |async; as currentPrice) {
+          <div class="btns d-flex justify-content-center">
+            @if (yourStock$ |async; as yourStocks) {
+            <button
+              class="btn m-1 btn-primary"
+              (click)="
+                onBuy(
+                  1,
+                  companyDetails.name,
+                  companyDetails.ticker,
+                  currentPrice,
+                  yourStocks
+                )
+              "
+            >
+              Buy
+            </button>
+            }<button class="btn m-1 btn-danger">Sell</button>
+          </div>
+          <h5>{{ companyDetails?.ticker }}</h5>
+          <h5>NASDAQ NMS-GLOBAL MARKET</h5>
+          }
         </div>
       </div>
-      <h5>{{ companyDetails?.ticker }}</h5>
-      <h5>NASDAQ NMS-GLOBAL MARKET</h5>
-    </div>
-    <div
-      class="logo w-25 d-flex z-2 flex-column justify-content-center align-items-center"
-    >
-      <i class="logo"></i>
-      <p>Market Open</p>
-    </div>
-    <div
-      class="prices w-25 d-flex z-2 flex-column justify-content-center align-items-center"
-    >
-      <h1><i></i> {{ currentPrice$ | async }}</h1>
-      <h5>({{ changePerc$ | async }}%)</h5>
-      <h5>08.12.2008.</h5>
+      <div
+        class="logo w-25 d-flex z-2 flex-column justify-content-center align-items-center"
+      >
+        <i class="logo"></i>
+        <p>Market Open</p>
+      </div>
+      <div
+        class="prices my-auto g-4 w-25 rounded-5 border-1 bg-body-secondary p-5 d-flex flex-column justify-content-center align-items-center"
+      >
+        <h1><i></i> {{ currentPrice$ | async }}</h1>
+        <h5>({{ changePerc$ | async }}%)</h5>
+        <h5>08.12.2008.</h5>
+      </div>
     </div>
   </div>
   <ul class="nav nav-tabs w-100" id="myTab" role="tablist">
     <li class="nav-item" role="presentation">
       <button
-        class="nav-link active"
+        class="nav-link bg-light text-black active"
         id="home-tab"
         data-bs-toggle="tab"
         data-bs-target="#home-tab-pane"
@@ -64,12 +88,12 @@
         aria-selected="true"
         (click)="showTabs()"
       >
-        Home
+        Chart
       </button>
     </li>
     <li class="nav-item" role="presentation">
       <button
-        class="nav-link"
+        class="nav-link bg-light text-black"
         id="profile-tab"
         data-bs-toggle="tab"
         data-bs-target="#profile-tab-pane"
@@ -79,12 +103,12 @@
         aria-selected="false"
         (click)="hideTab()"
       >
-        Profile
+        News
       </button>
     </li>
     <li class="nav-item" role="presentation">
       <button
-        class="nav-link"
+        class="nav-link bg-light text-black"
         id="contact-tab"
         data-bs-toggle="tab"
         data-bs-target="#contact-tab-pane"
@@ -94,12 +118,12 @@
         aria-selected="false"
         (click)="hideTab()"
       >
-        Contact
+        About Company
       </button>
     </li>
     <li class="nav-item" role="presentation">
       <button
-        class="nav-link"
+        class="nav-link bg-light text-black"
         id="disabled-tab"
         data-bs-toggle="tab"
         data-bs-target="#disabled-tab-pane"
@@ -113,7 +137,7 @@
       </button>
     </li>
   </ul>
-  <div class="tab-content z-2" id="myTabContent">
+  <div class="tab-content" id="myTabContent">
     <div
       *ngIf="showTab"
       class="tab-pane d-flex align-items-center justify-content-center flex-column fade show active"
@@ -187,7 +211,7 @@
       </div>
     </div>
     <div
-      class="tab-pane fade"
+      class="tab-pane about fade"
       id="contact-tab-pane"
       role="tabpanel"
       aria-labelledby="contact-tab"
@@ -195,7 +219,7 @@
     >
       <div class="container">
         <p>
-          {{ companyDetails?.description }}
+          {{ companyDetails.description }}
         </p>
       </div>
     </div>
@@ -209,4 +233,5 @@
       <h5>sdfljsdfkl</h5>
     </div>
   </div>
+  }
 </div>

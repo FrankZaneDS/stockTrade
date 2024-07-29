@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { Params } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 @Injectable({
@@ -8,27 +9,19 @@ import { map } from 'rxjs/operators';
 export class DataService {
   private apiKey = 'YAUtp_t1wTdL7oVD7oAGRqrouqqv8K4G';
   private baseUrl = 'https://api.polygon.io/v2';
-  private pinhubApi = 'cqch419r01qoodgbfbk0cqch419r01qoodgbfbkg';
+  pinhubApi = 'cqch419r01qoodgbfbk0cqch419r01qoodgbfbkg';
   private pinhubUrl = 'https://finnhub.io/api/v1/quote';
 
   balance$ = new BehaviorSubject<number>(100000);
-  yourStocks$ = new BehaviorSubject<YourStocks[]>([
-    {
-      name: 'Apple Inc.',
-      amount: 4,
-      symbol: 'AAPL',
-      price: 3,
-      totalCost: 12,
-    },
-  ]);
+  yourStocks$ = new BehaviorSubject<YourStocks[]>([]);
 
   http = inject(HttpClient);
   currentPrice$ = new Observable<number>();
 
-  getCurrentPrice(symbol: string): Observable<any> {
-    const params = new HttpParams()
-      .set('symbol', symbol)
-      .set('token', this.pinhubApi);
+  getCurrentPrice(params: Params): Observable<any> {
+    // const params = new HttpParams()
+    //   .set('symbol', symbol)
+    //   .set('token', this.pinhubApi);
 
     return this.http.get<any>(this.pinhubUrl, { params });
   }
