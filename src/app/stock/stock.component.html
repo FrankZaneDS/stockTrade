@@ -1,17 +1,17 @@
 @if (curentPrice$|async; as price) {
 <div class="card">
   <div class="card-title m-4">
-    <h1 class="">{{ stock.name }}</h1>
+    <h1 class="text-center">{{ stock.name }}</h1>
   </div>
   <div
-    class="card-content border-1 rounded-3 m-3 d-flex justify-content-evenly flex-wrap gap-1"
+    class="card-content border-1 rounded-3 m-3 d-flex justify-content-evenly g-3 flex-wrap gap-1"
   >
-    <p>Quantity:{{ stock.amount }}</p>
-    <p>Total Cost:{{ stock.totalCost }}</p>
-    <p>Current Price:{{ stock.price }}</p>
-    <p>Market Value:{{ curentValue$ | async }}</p>
+    <h5>Quantity:{{ stock.amount }}</h5>
+    <h5>Total Cost:{{ stock.totalCost }}</h5>
+    <h5>Current Price:{{ stock.price }}</h5>
+    <h5>Market Value:{{ curentValue$ | async }}</h5>
   </div>
-  <div class="btn d-flex justify-content-center">
+  <div class="btn card-img-bottom mb-4 d-flex justify-content-center">
     <button (click)="onSellBtn(stock, price)" class="w-50 btn btn-danger">
       Sell
     </button>

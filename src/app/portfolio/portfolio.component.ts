@@ -1,16 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { DataService, YourStocks } from '../data.service';
 import { CommonModule } from '@angular/common';
-import {
-  combineLatest,
-  forkJoin,
-  map,
-  mergeMap,
-  Observable,
-  of,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { combineLatest, forkJoin, map, mergeMap, Observable, of } from 'rxjs';
 import { StockComponent } from '../stock/stock.component';
 
 @Component({

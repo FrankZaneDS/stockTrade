@@ -35,12 +35,15 @@
         <div
           class="buySell my-auto g-4 border-1 rounded-5 bg-body-secondary p-5 d-flex flex-column justify-content-center align-items-center"
         >
-          <h1>{{ companyDetails?.name }}</h1>
+          <h1 class="d-flex justify-content-center">
+            {{ companyDetails?.name }}
+          </h1>
           @if (currentPrice$ |async; as currentPrice) {
           <div class="btns d-flex justify-content-center">
             @if (yourStock$ |async; as yourStocks) {
             <button
               class="btn m-1 btn-primary"
+              style="width: 100px"
               (click)="
                 onBuy(
                   1,
@@ -53,10 +56,10 @@
             >
               Buy
             </button>
-            }<button class="btn m-1 btn-danger">Sell</button>
+            }
           </div>
           <h5>{{ companyDetails?.ticker }}</h5>
-          <h5>NASDAQ NMS-GLOBAL MARKET</h5>
+          <h5 class="text-center">{{ companyDetails.sic_description }}</h5>
           }
         </div>
       </div>
@@ -64,7 +67,7 @@
         class="logo w-25 d-flex z-2 flex-column justify-content-center align-items-center"
       >
         <i class="logo"></i>
-        <p>Market Open</p>
+        <p>Market Open: {{ companyDetails.active }}</p>
       </div>
       <div
         class="prices my-auto g-4 w-25 rounded-5 border-1 bg-body-secondary p-5 d-flex flex-column justify-content-center align-items-center"
