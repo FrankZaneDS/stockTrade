@@ -1,3 +1,6 @@
 h5 {
   margin: 20px;
 }
+.card {
+  max-height: 350px;
+}

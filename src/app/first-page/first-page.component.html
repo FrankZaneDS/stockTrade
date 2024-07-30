@@ -30,6 +30,7 @@
   <div *ngIf="companyDetails" class="section d-flex flex-column">
     <div class="basicInfo d-flex mb-5 justify-content-evenly w-100">
       <div
+        style="width: 300px; height: 300px"
         class="companyName z-2 w-25 d-flex flex-column justify-content-center align-items-center"
       >
         <div
@@ -44,6 +45,8 @@
             <button
               class="btn m-1 btn-primary"
               style="width: 100px"
+              data-toggle="modal"
+              data-target="#exampleModal"
               (click)="
                 onBuy(
                   1,
@@ -56,6 +59,7 @@
             >
               Buy
             </button>
+
             }
           </div>
           <h5>{{ companyDetails?.ticker }}</h5>
@@ -70,11 +74,12 @@
         <p>Market Open: {{ companyDetails.active }}</p>
       </div>
       <div
-        class="prices my-auto g-4 w-25 rounded-5 border-1 bg-body-secondary p-5 d-flex flex-column justify-content-center align-items-center"
+        style="width: 300px; height: 300px"
+        class="prices my-auto z-2 w-25 rounded-5 border-1 bg-body-secondary p-5 d-flex flex-column justify-content-center align-items-center"
       >
-        <h1><i></i> {{ currentPrice$ | async }}</h1>
-        <h5>({{ changePerc$ | async }}%)</h5>
-        <h5>08.12.2008.</h5>
+        <h1 class="m-2"><i></i> {{ currentPrice$ | async | number }}</h1>
+        <h5 class="m-2">({{ changePerc$ | async | number }}%)</h5>
+        <h5 class="m-2 text-center">{{ currentDate }}</h5>
       </div>
     </div>
   </div>
@@ -151,7 +156,7 @@
     >
       <div class="btn mt-5 d-flex">
         <button class="btn btn-info" (click)="getSevenDays()">7days</button
-        ><button class="btn btn-info" (click)="getMonth()">30days</button
+        ><button class="btn btn-info mx-2" (click)="getMonth()">30days</button
         ><button class="btn btn-info" (click)="getSixMonths()">
           half year
         </button>
@@ -235,6 +240,10 @@
     >
       <h5>sdfljsdfkl</h5>
     </div>
+  </div>
+  } @else{
+  <div class="container d-flex justify-content-center align-items-center">
+    <div class="image"></div>
   </div>
   }
 </div>

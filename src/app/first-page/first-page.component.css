@@ -53,7 +53,13 @@ ul > li {
     width: 100%;
   }
 }
-
+.image {
+  background: url("../assets/img/images.png");
+  background-size: contain;
+  overflow: hidden;
+  height: 500px;
+  width: 700px;
+}
 .about {
   margin-top: 50px;
   display: flex;

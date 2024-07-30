@@ -6,7 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BaseChartDirective } from 'ng2-charts';
 import { map, Observable, shareReplay } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-
+import moment from 'moment';
 @Component({
   selector: 'app-first-page',
   standalone: true,
@@ -25,6 +25,7 @@ export class FirstPageComponent implements OnInit {
   route = inject(ActivatedRoute);
   router = inject(Router);
 
+  currentDate: moment.Moment = moment();
   yourStock$ = this.dataService.yourStocks$;
   data$: Observable<any>;
   stockSymbol: string = this.route.snapshot.params.symbol;
