@@ -3,11 +3,12 @@ import { DataService, YourStocks } from '../data.service';
 import { CommonModule } from '@angular/common';
 import { combineLatest, forkJoin, map, mergeMap, Observable, of } from 'rxjs';
 import { StockComponent } from '../stock/stock.component';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-portfolio',
   standalone: true,
-  imports: [CommonModule, StockComponent],
+  imports: [CommonModule, StockComponent, RouterLink],
   templateUrl: './portfolio.component.html',
   styleUrl: './portfolio.component.css',
 })

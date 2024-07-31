@@ -34,7 +34,10 @@ export class FirstPageComponent implements OnInit {
   currentPrice$: Observable<number>;
   changePerc$ = new Observable<number>();
   newsArticle$ = new Observable<newsResults[]>();
-  showTab = true;
+  chartTab = true;
+  newsTab = false;
+  aboutTab = false;
+  moreTab = false;
   companyDetails$: Observable<Company>;
   balance$ = this.dataService.balance$;
 
@@ -60,12 +63,32 @@ export class FirstPageComponent implements OnInit {
   lineChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
   };
-  showTabs() {
-    this.showTab = true;
+  chartTabs() {
+    this.chartTab = true;
+    this.newsTab = false;
+    this.aboutTab = false;
+    this.moreTab = false;
   }
-  hideTab() {
-    this.showTab = false;
+  newsTabs() {
+    this.chartTab = false;
+    this.newsTab = true;
+    this.aboutTab = false;
+    this.moreTab = false;
+  }
+  aboutTabs() {
+    this.chartTab = false;
+    this.newsTab = false;
+    this.aboutTab = true;
+    this.moreTab = false;
+  }
+  moreTabs() {
+    this.chartTab = false;
+    this.newsTab = false;
+    this.aboutTab = false;
+    this.moreTab = true;
+    console.log(this.moreTab);
   }
   onSymbolChange(symbol: string) {
     this.router.navigate([], { queryParams: { symbol } });

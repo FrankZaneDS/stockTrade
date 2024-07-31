@@ -1,6 +1,10 @@
 h5 {
   margin: 20px;
+  min-width: 30%;
 }
 .card {
-  max-height: 350px;
+  min-height: 350px;
+  .card-title {
+    min-height: 50px;
+  }
 }

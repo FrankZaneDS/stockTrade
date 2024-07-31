@@ -11,6 +11,7 @@ export class DataService {
   private baseUrl = 'https://api.polygon.io/v2';
   pinhubApi = 'cqch419r01qoodgbfbk0cqch419r01qoodgbfbkg';
   private pinhubUrl = 'https://finnhub.io/api/v1/quote';
+  private finhubSearchUrl = 'https://finnhub.io/api/v1/search';
 
   balance$ = new BehaviorSubject<number>(100000);
   yourStocks$ = new BehaviorSubject<YourStocks[]>([]);

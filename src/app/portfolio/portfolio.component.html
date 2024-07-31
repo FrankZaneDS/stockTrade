@@ -1,18 +1,36 @@
 <div class="container">
-  <div class="header my-5 d-flex justify-content-between">
-    <h2>My Portfolio</h2>
-    <p>Balance:{{ balance$ | async | number }}$</p>
-    <h2>Portolio Value:{{ portfolioValue$ | async | number }}$</h2>
+  <nav class="navbar z-2 bg-dark navbar-expand-lg w-100">
+    <div class="container d-flex justify-content-between">
+      <a class="navbar-brand text-light" routerLink="/">StockApp</a>
+      <div class="links w-25 d-flex justify-content-evenly">
+        <a href="#" class="watchlist text-light text-decoration-none"
+          >Watchlist</a
+        ><a
+          routerLink="/portfolio"
+          class="portfolio text-light text-decoration-none"
+          >Portfolio
+        </a>
+      </div>
+    </div>
+  </nav>
+  <div class="container myPortfolio">
+    <div
+      class="header p-3 align-items-center mb-5 d-flex justify-content-between"
+    >
+      <h4>Balance:{{ balance$ | async | number }}$</h4>
+      <h4>My portfolio</h4>
+      <h4>Portolio Value:{{ portfolioValue$ | async | number }}$</h4>
+    </div>
+    @if (yourStocks$ | async; as yourStocks) {
+    <div class="stocks d-flex flex-wrap justify-content-between w-100">
+      <ng-container *ngFor="let stock of yourStocks$ | async">
+        <app-stock
+          style="width: 600px"
+          [stock]="stock"
+          [yourStocks]="yourStocks"
+        ></app-stock>
+      </ng-container>
+    </div>
+    }
   </div>
-  @if (yourStocks$ | async; as yourStocks) {
-  <div class="stocks d-flex flex-wrap justify-content-between w-100">
-    <ng-container *ngFor="let stock of yourStocks$ | async">
-      <app-stock
-        style="width: 600px"
-        [stock]="stock"
-        [yourStocks]="yourStocks"
-      ></app-stock>
-    </ng-container>
-  </div>
-  }
 </div>

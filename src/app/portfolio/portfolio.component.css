@@ -1,3 +1,16 @@
+a {
+  cursor: pointer;
+}
 .stocks {
   gap: 30px;
+}
+.myPortfolio {
+  border: solid 1px;
+  border-top: none;
+  min-height: 90vh;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+.header {
+  border-bottom: 1px solid;
 }
