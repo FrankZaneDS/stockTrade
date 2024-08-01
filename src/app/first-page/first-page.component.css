@@ -72,16 +72,16 @@ h1 {
   text-align: center;
 }
 .buySell {
-  min-width: 500px;
+  width: 30%;
   min-height: 300px;
-  padding: 50px;
+  padding: 30px;
   border-radius: 50px;
   border: 1px solid;
 }
 .prices {
-  min-width: 500px;
+  min-width: 30%;
   min-height: 300px;
-  padding: 50px;
+  padding: 30px;
   border-radius: 50px;
   border: 1px solid;
 }

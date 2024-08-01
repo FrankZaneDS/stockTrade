@@ -114,7 +114,7 @@ export class FirstPageComponent implements OnInit {
   }
   getStockPrice() {
     const params = {
-      symbol: this.stockSymbol,
+      symbol: this.stockSymbol.toUpperCase(),
       token: this.dataService.pinhubApi,
     };
     this.data$ = this.dataService
@@ -134,16 +134,18 @@ export class FirstPageComponent implements OnInit {
   }
 
   getNews() {
-    this.newsArticle$ = this.dataService.getNews(this.stockSymbol).pipe(
-      map((data) => {
-        return data['results'];
-      })
-    );
+    this.newsArticle$ = this.dataService
+      .getNews(this.stockSymbol.toUpperCase())
+      .pipe(
+        map((data) => {
+          return data['results'];
+        })
+      );
   }
 
   getCompanyDetails() {
     this.companyDetails$ = this.dataService
-      .getCompanyDetails(this.stockSymbol)
+      .getCompanyDetails(this.stockSymbol.toUpperCase())
       .pipe(map((data) => data.results));
     this.getStockPrice();
     this.getNews();
@@ -158,7 +160,7 @@ export class FirstPageComponent implements OnInit {
 
     this.dataService
       .getHistoricalPrices(
-        this.stockSymbol,
+        this.stockSymbol.toUpperCase(),
         formatDate(last7Days),
         formatDate(today)
       )
@@ -185,7 +187,7 @@ export class FirstPageComponent implements OnInit {
 
     this.dataService
       .getHistoricalPrices(
-        this.stockSymbol,
+        this.stockSymbol.toUpperCase(),
         formatDate(lastMonth),
         formatDate(today)
       )
@@ -212,7 +214,7 @@ export class FirstPageComponent implements OnInit {
 
     this.dataService
       .getHistoricalPrices(
-        this.stockSymbol,
+        this.stockSymbol.toUpperCase(),
         formatDate(last6Months),
         formatDate(today)
       )
@@ -233,7 +235,7 @@ export class FirstPageComponent implements OnInit {
       name,
       symbol: ticker,
       price,
-      amount: null,
+      amount: 1,
       totalCost: null,
       wishlist: true,
       description: desc,
@@ -241,6 +243,7 @@ export class FirstPageComponent implements OnInit {
     wishlist.push(stock);
     this.dataService.wishlist$.next(wishlist);
   }
+
   onBuy(
     amount: number,
     name: string,
@@ -256,7 +259,7 @@ export class FirstPageComponent implements OnInit {
     const newBalance = oldBalance - price * amount;
 
     if (newBalance < 0) {
-      console.error('Insufficient funds.');
+      alert('Insufficient funds.');
       return; // Prekini lanac ako nema dovoljno sredstava
     }
 
