@@ -12,6 +12,7 @@ export class DataService {
   pinhubApi = 'cqch419r01qoodgbfbk0cqch419r01qoodgbfbkg';
   private pinhubUrl = 'https://finnhub.io/api/v1/quote';
   private finhubSearchUrl = 'https://finnhub.io/api/v1/search';
+  wishlist$ = new BehaviorSubject<YourStocks[]>([]);
 
   balance$ = new BehaviorSubject<number>(100000);
   yourStocks$ = new BehaviorSubject<YourStocks[]>([]);
@@ -144,4 +145,6 @@ export interface YourStocks {
   symbol: string;
   price: number;
   totalCost: number;
+  wishlist: boolean;
+  description: string;
 }

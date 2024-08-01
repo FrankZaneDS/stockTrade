@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BaseChartDirective } from 'ng2-charts';
-import { map, Observable, shareReplay } from 'rxjs';
+import { combineLatest, map, Observable, shareReplay } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import moment from 'moment';
 @Component({
@@ -34,13 +34,15 @@ export class FirstPageComponent implements OnInit {
   currentPrice$: Observable<number>;
   changePerc$ = new Observable<number>();
   newsArticle$ = new Observable<newsResults[]>();
+  wishlist$ = this.dataService.wishlist$;
   chartTab = true;
   newsTab = false;
   aboutTab = false;
   moreTab = false;
   companyDetails$: Observable<Company>;
   balance$ = this.dataService.balance$;
-
+  disabledWishlist$: Observable<boolean>;
+  disableButtonWishlist: boolean;
   price: number;
 
   historicalData: any = {
@@ -90,12 +92,26 @@ export class FirstPageComponent implements OnInit {
     this.moreTab = true;
     console.log(this.moreTab);
   }
+
   onSymbolChange(symbol: string) {
     this.router.navigate([], { queryParams: { symbol } });
     this.getCompanyDetails();
     this.getSevenDays();
+    this.disabledWishlist$ = combineLatest([
+      this.wishlist$,
+      this.companyDetails$,
+    ]).pipe(
+      map(([wishlist, details]) => {
+        this.disableButtonWishlist = this.checkCommonValues(wishlist, details);
+        return !this.disableButtonWishlist;
+      })
+    );
   }
-
+  checkCommonValues(wishlist: YourStocks[], details: Company) {
+    return wishlist.some((stock) => {
+      return stock.name === details.name;
+    });
+  }
   getStockPrice() {
     const params = {
       symbol: this.stockSymbol,
@@ -211,7 +227,20 @@ export class FirstPageComponent implements OnInit {
         );
       });
   }
-
+  addToWishlist(name: string, ticker: string, price: number, desc: string) {
+    const wishlist: YourStocks[] = this.dataService.wishlist$.getValue();
+    const stock: YourStocks = {
+      name,
+      symbol: ticker,
+      price,
+      amount: null,
+      totalCost: null,
+      wishlist: true,
+      description: desc,
+    };
+    wishlist.push(stock);
+    this.dataService.wishlist$.next(wishlist);
+  }
   onBuy(
     amount: number,
     name: string,
@@ -241,6 +270,8 @@ export class FirstPageComponent implements OnInit {
       symbol: ticker,
       price,
       totalCost: price * amount,
+      wishlist: false,
+      description: null,
       // currentValue: price * amount,
     };
 

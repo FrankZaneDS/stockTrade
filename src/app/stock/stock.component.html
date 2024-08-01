@@ -6,15 +6,22 @@
   <div
     class="card-content border-1 rounded-3 m-2 d-flex justify-content-evenly g-2 flex-wrap gap-1"
   >
-    <h5>Quantity:{{ stock.amount | number }}</h5>
-    <h5>Total Cost:{{ stock.totalCost | number }}$</h5>
+    <h5 *ngIf="sellBtn">Quantity:{{ stock.amount | number }}</h5>
+    <p *ngIf="wishlistBtn">{{ stock.description }}</p>
+    <h5 *ngIf="sellBtn">Total Cost:{{ stock.totalCost | number }}$</h5>
     <h5>Current Price:{{ stock.price | number }}$</h5>
-    <h5>Market Value:{{ curentValue$ | async | number }}$</h5>
+    <h5 *ngIf="sellBtn">Market Value:{{ curentValue$ | async | number }}$</h5>
   </div>
-  <div class="btn card-img-bottom mb-2 d-flex justify-content-center">
-    <button (click)="onSellBtn(stock, price)" class="w-50 btn btn-danger">
+  <div class="btn card-img-bottom mb-2 d-flex justify-content-evenly">
+    <button
+      *ngIf="sellBtn"
+      (click)="onSellBtn(stock, price)"
+      class="w-50 btn btn-danger"
+    >
       Sell
     </button>
+    <button *ngIf="wishlistBtn" class="w-25 btn btn-danger">Remove</button>
+    <button *ngIf="wishlistBtn" class="w-25 btn btn-danger">Buy</button>
   </div>
 </div>
 }

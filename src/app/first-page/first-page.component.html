@@ -1,9 +1,11 @@
 <div class="container-fluid">
   <nav class="navbar z-2 bg-dark navbar-expand-lg w-100">
     <div class="container d-flex justify-content-between">
-      <a class="navbar-brand text-light" href="#">Stock Search</a>
+      <a class="navbar-brand text-light" routerLink="">Stock Search</a>
       <div class="links w-25 d-flex justify-content-evenly">
-        <a href="#" class="watchlist text-light text-decoration-none"
+        <a
+          routerLink="/wishlist/:ID"
+          class="watchlist text-light text-decoration-none"
           >Watchlist</a
         ><a
           routerLink="/portfolio"
@@ -42,11 +44,11 @@
 
         <h5>Symbol: {{ companyDetails?.ticker }}</h5>
         <h5 class="text-center">{{ companyDetails.sic_description }}</h5>
-        <div class="btns d-flex justify-content-center">
+        <div class="btns d-flex w-100 justify-content-evenly">
           @if (yourStock$ |async; as yourStocks) {
           <button
             class="btn mt-5 btn-dark"
-            style="width: 200px"
+            style="width: 40%"
             data-toggle="modal"
             data-target="#exampleModal"
             (click)="
@@ -60,6 +62,21 @@
             "
           >
             Buy
+          </button>
+          <button
+            *ngIf="disabledWishlist$ | async"
+            (click)="
+              addToWishlist(
+                companyDetails.name,
+                companyDetails.ticker,
+                currentPrice,
+                companyDetails.description
+              )
+            "
+            style="width: 40%"
+            class="wishlist btn mt-5 btn-dark"
+          >
+            Add to wishlist
           </button>
 
           }

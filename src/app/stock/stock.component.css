@@ -8,3 +8,6 @@ h5 {
     min-height: 50px;
   }
 }
+p {
+  text-align: justify;
+}
