@@ -20,8 +20,31 @@
     >
       Sell
     </button>
-    <button *ngIf="wishlistBtn" class="w-25 btn btn-danger">Remove</button>
-    <button *ngIf="wishlistBtn" class="w-25 btn btn-danger">Buy</button>
+    <button
+      (click)="onRemoveBtn(index)"
+      *ngIf="wishlistBtn"
+      class="w-25 btn btn-danger"
+    >
+      Remove
+    </button>
+    @if (yourStocks$ |async; as yourStocks) {
+    <button
+      *ngIf="wishlistBtn"
+      (click)="
+        onBuy(
+          1,
+          stock.name,
+          stock.symbol,
+          stock.price,
+          stock.wishlist,
+          yourStocks
+        )
+      "
+      class="w-25 btn btn-danger"
+    >
+      Buy
+    </button>
+    }
   </div>
 </div>
 }

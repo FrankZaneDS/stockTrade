@@ -3,8 +3,7 @@
     <div class="container d-flex justify-content-between">
       <a class="navbar-brand text-light" routerLink="/">StockApp</a>
       <div class="links w-25 d-flex justify-content-evenly">
-        <a href="#" class="watchlist text-light text-decoration-none"
-          >Watchlist</a
+        <a class="watchlist text-light text-decoration-none">Watchlist</a
         ><a
           routerLink="/portfolio"
           class="portfolio text-light text-decoration-none"
@@ -22,8 +21,12 @@
     </div>
     @if (wishlist$ | async; as yourStocks) {
     <div class="stocks d-flex flex-wrap justify-content-between w-100">
-      <ng-container *ngFor="let stock of wishlist$ | async">
-        <app-stock style="width: 600px" [stock]="stock"></app-stock>
+      <ng-container *ngFor="let stock of wishlist$ | async; let i = index">
+        <app-stock
+          style="width: 600px; height: 400px"
+          [index]="i"
+          [stock]="stock"
+        ></app-stock>
       </ng-container>
     </div>
     }

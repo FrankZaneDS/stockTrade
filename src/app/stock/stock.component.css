@@ -3,7 +3,7 @@ h5 {
   min-width: 30%;
 }
 .card {
-  min-height: 350px;
+  height: 500px;
   .card-title {
     min-height: 50px;
   }

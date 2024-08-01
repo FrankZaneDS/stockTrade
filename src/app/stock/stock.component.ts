@@ -12,28 +12,29 @@ import { ActivatedRoute, Router } from '@angular/router';
   styleUrl: './stock.component.css',
 })
 export class StockComponent implements OnInit {
-  dataServis = inject(DataService);
+  dataService = inject(DataService);
   route = inject(ActivatedRoute);
   router = inject(Router);
 
   @Input() stock: YourStocks;
   @Input() yourStocks: YourStocks[];
+  @Input() index: number;
 
+  yourStocks$ = this.dataService.yourStocks$;
   data$: Observable<any>;
 
-  yourStockss: YourStocks[] = [];
   wishlistBtn: boolean;
   sellBtn: boolean;
-  balance$ = this.dataServis.balance$;
+  balance$ = this.dataService.balance$;
   curentValue$: Observable<number>;
   curentPrice$: Observable<number>;
   amount: number = 1;
   getCurentValue() {
     const params = {
       symbol: this.stock.symbol,
-      token: this.dataServis.pinhubApi,
+      token: this.dataService.pinhubApi,
     };
-    this.data$ = this.dataServis
+    this.data$ = this.dataService
       .getCurrentPrice(params)
       .pipe(shareReplay({ refCount: true }));
     this.curentPrice$ = this.data$.pipe(
@@ -65,7 +66,7 @@ export class StockComponent implements OnInit {
       console.log('sdfsd');
     }
 
-    this.dataServis.yourStocks$.next(this.yourStocks);
+    this.dataService.yourStocks$.next(this.yourStocks);
     this.getCurentValue();
     console.log(this.yourStocks);
   }
@@ -78,12 +79,18 @@ export class StockComponent implements OnInit {
       this.sellBtn = true;
     }
   }
+  onRemoveBtn(index) {
+    const wishlist = this.dataService.wishlist$.getValue();
+    wishlist.splice(index, 1);
+    this.dataService.wishlist$.next(wishlist);
+  }
   onBuy(
     amount: number,
     name: string,
-    symbol: string,
+    ticker: string,
     price: number,
-    wishlist: boolean
+    wishlist: boolean,
+    yourStocks: YourStocks[]
   ) {
     let yourStock: YourStocks;
 
@@ -99,45 +106,40 @@ export class StockComponent implements OnInit {
 
     // Ažuriranje balansa
     this.balance$.next(newBalance);
-    let stockss: YourStocks[];
-    this.dataServis.yourStocks$.pipe(
-      map((stocks) => {
-        stockss = stocks;
-      })
-    );
+
     // Kreiranje objekta za kupovinu akcija
     yourStock = {
       name,
       amount,
-      symbol,
+      symbol: ticker,
       price,
-      totalCost: +price * amount,
-      wishlist,
+      totalCost: price * amount,
+      wishlist: false,
       description: null,
       // currentValue: price * amount,
     };
 
     // Emitovanje novih akcija
 
-    const existingStockIndex = stockss.findIndex(
+    const existingStockIndex = yourStocks.findIndex(
       (stock) => stock.symbol === yourStock.symbol
     );
 
     if (existingStockIndex !== -1) {
       // Ako već postoji, povećaj količinu
-      stockss[existingStockIndex].amount += amount;
-      stockss[existingStockIndex].totalCost += amount * +price;
+      yourStocks[existingStockIndex].amount += amount;
+      yourStocks[existingStockIndex].totalCost += amount * price;
     } else {
       // Inače, dodaj novu akciju
+      yourStocks.push(yourStock);
     }
-    stockss.push(this.stock);
-    this.dataServis.yourStocks$.next(this.yourStockss);
+
+    this.dataService.yourStocks$.next(yourStocks);
   }
+
   ngOnInit(): void {
     this.getCurentValue();
     this.hideBtn();
     console.log(this.route.snapshot);
-
-    console.log(this.yourStockss);
   }
 }
