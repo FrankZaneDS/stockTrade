@@ -44,6 +44,9 @@ export class FirstPageComponent implements OnInit {
   disabledWishlist$: Observable<boolean>;
   disableButtonWishlist: boolean;
   price: number;
+  amount: number = 1;
+  buy: boolean = false;
+  notEnough: boolean = false;
 
   historicalData: any = {
     last7Days: [],
@@ -244,22 +247,21 @@ export class FirstPageComponent implements OnInit {
     this.dataService.wishlist$.next(wishlist);
   }
 
-  onBuy(
-    amount: number,
-    name: string,
-    ticker: string,
-    price: number,
-    yourStocks: YourStocks[]
-  ) {
+  onBuy(name: string, ticker: string, price: number, yourStocks: YourStocks[]) {
     let yourStock: YourStocks;
 
     // Dobavljanje trenutne cene
 
     const oldBalance = this.balance$.getValue();
-    const newBalance = oldBalance - price * amount;
+    const newBalance = oldBalance - price * this.amount;
 
     if (newBalance < 0) {
-      alert('Insufficient funds.');
+      console.log('Insufficient funds.');
+      this.notEnough = true;
+      setTimeout(() => {
+        this.notEnough = false;
+      }, 2000);
+
       return; // Prekini lanac ako nema dovoljno sredstava
     }
 
@@ -269,10 +271,10 @@ export class FirstPageComponent implements OnInit {
     // Kreiranje objekta za kupovinu akcija
     yourStock = {
       name,
-      amount,
+      amount: this.amount,
       symbol: ticker,
       price,
-      totalCost: price * amount,
+      totalCost: price * this.amount,
       wishlist: false,
       description: null,
       // currentValue: price * amount,
@@ -286,12 +288,17 @@ export class FirstPageComponent implements OnInit {
 
     if (existingStockIndex !== -1) {
       // Ako već postoji, povećaj količinu
-      yourStocks[existingStockIndex].amount += amount;
-      yourStocks[existingStockIndex].totalCost += amount * price;
+      yourStocks[existingStockIndex].amount += this.amount;
+      yourStocks[existingStockIndex].totalCost += this.amount * price;
     } else {
       // Inače, dodaj novu akciju
       yourStocks.push(yourStock);
     }
+    alert('Insufficient funds.');
+    this.buy = true;
+    setTimeout(() => {
+      this.buy = false;
+    }, 2000);
 
     this.dataService.yourStocks$.next(yourStocks);
   }
