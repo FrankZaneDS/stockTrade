@@ -301,8 +301,11 @@ export class FirstPageComponent implements OnInit {
     }, 2000);
 
     this.dataService.yourStocks$.next(yourStocks);
+    this.amount = 1;
   }
-
+  closeBtn() {
+    this.amount = 1;
+  }
   ngOnInit(): void {}
 }
 //moment.js
