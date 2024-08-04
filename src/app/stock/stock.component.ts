@@ -3,11 +3,12 @@ import { DataService, YourStocks } from '../data.service';
 import { map, Observable, shareReplay } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-stock',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './stock.component.html',
   styleUrl: './stock.component.css',
 })
@@ -29,6 +30,8 @@ export class StockComponent implements OnInit {
   curentValue$: Observable<number>;
   curentPrice$: Observable<number>;
   amount: number = 1;
+  buy: boolean = false;
+  notEnough: boolean = false;
   getCurentValue() {
     const params = {
       symbol: this.stock.symbol,
@@ -50,20 +53,25 @@ export class StockComponent implements OnInit {
       })
     );
   }
-  onSellBtn(stock: YourStocks, price) {
+  onSellBtn(stock: YourStocks, price: number) {
     const oldBalance = this.balance$.getValue();
-    const newBalance = oldBalance + price * this.amount;
-    this.balance$.next(newBalance);
+
     const existingStockIndex = this.yourStocks.findIndex(
       (s) => s.symbol === stock.symbol
     );
 
     if (this.yourStocks[existingStockIndex].amount > this.amount) {
       this.yourStocks[existingStockIndex].amount -= this.amount;
+      const newBalance = oldBalance + price * this.amount;
+      this.balance$.next(newBalance);
       console.log(price);
+    } else if (this.yourStocks[existingStockIndex].amount < this.amount) {
+      return;
     } else {
       this.yourStocks.splice(existingStockIndex, 1);
       console.log('sdfsd');
+      const newBalance = oldBalance + price * this.amount;
+      this.balance$.next(newBalance);
     }
 
     this.dataService.yourStocks$.next(this.yourStocks);
@@ -85,11 +93,10 @@ export class StockComponent implements OnInit {
     this.dataService.wishlist$.next(wishlist);
   }
   onBuy(
-    amount: number,
     name: string,
     ticker: string,
     price: number,
-    wishlist: boolean,
+    wishlist,
     yourStocks: YourStocks[]
   ) {
     let yourStock: YourStocks;
@@ -97,10 +104,15 @@ export class StockComponent implements OnInit {
     // Dobavljanje trenutne cene
 
     const oldBalance = this.balance$.getValue();
-    const newBalance = oldBalance - price * amount;
+    const newBalance = oldBalance - price * this.amount;
 
     if (newBalance < 0) {
-      alert('Insufficient funds.');
+      console.log('Insufficient funds.');
+      this.notEnough = true;
+      setTimeout(() => {
+        this.notEnough = false;
+      }, 2000);
+
       return; // Prekini lanac ako nema dovoljno sredstava
     }
 
@@ -110,11 +122,11 @@ export class StockComponent implements OnInit {
     // Kreiranje objekta za kupovinu akcija
     yourStock = {
       name,
-      amount,
+      amount: this.amount,
       symbol: ticker,
       price,
-      totalCost: price * amount,
-      wishlist: false,
+      totalCost: price * this.amount,
+      wishlist,
       description: null,
       // currentValue: price * amount,
     };
@@ -127,14 +139,20 @@ export class StockComponent implements OnInit {
 
     if (existingStockIndex !== -1) {
       // Ako već postoji, povećaj količinu
-      yourStocks[existingStockIndex].amount += amount;
-      yourStocks[existingStockIndex].totalCost += amount * price;
+      yourStocks[existingStockIndex].amount += this.amount;
+      yourStocks[existingStockIndex].totalCost += this.amount * price;
     } else {
       // Inače, dodaj novu akciju
       yourStocks.push(yourStock);
     }
 
+    this.buy = true;
+    setTimeout(() => {
+      this.buy = false;
+    }, 2000);
+
     this.dataService.yourStocks$.next(yourStocks);
+    this.amount = 1;
   }
 
   ngOnInit(): void {

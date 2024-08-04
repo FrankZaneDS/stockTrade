@@ -96,14 +96,26 @@
   >
     <div class="modal-dialog" style="z-index: 10500" role="document">
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header d-flex justify-content-between">
           <h5 class="modal-title" id="exampleModalLabel">
             How many stocks do you want to buy?
           </h5>
+          <h5 class="balance">{{ balance$ | async | number }}$</h5>
         </div>
         <div class="modal-body">
-          <input [(ngModel)]="amount" type="number" />
-          <h5>{{ this.amount * currentPrice }}</h5>
+          <input
+            (keyup.enter)="
+              onBuy(
+                companyDetails.name,
+                companyDetails.ticker,
+                currentPrice,
+                yourStocks
+              )
+            "
+            [(ngModel)]="amount"
+            type="number"
+          />
+          <h5>{{ this.amount * currentPrice | number }}$</h5>
           <p class="text-bg-danger" [ngClass]="{ hidden: notEnough === false }">
             Insufficient funds.
           </p>

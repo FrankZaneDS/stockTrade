@@ -51,13 +51,14 @@ export class PortfolioComponent implements OnInit {
   portfolioValue$ = combineLatest([this.getCurrentPrice$, this.balance$]).pipe(
     map(([stockPrices, balance]) => {
       if (stockPrices.length === 0) {
-        return balance;
+        return 0;
       }
       const totalStockValue = stockPrices.reduce(
         (acc, price) => acc + price,
         0
       );
-      const portfolioValue = totalStockValue + balance;
+      const portfolioValue = totalStockValue;
+      // + balance;
       console.log('Total Stock Value:', totalStockValue);
       console.log('Portfolio Value:', portfolioValue);
       return portfolioValue;

@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
   <nav class="navbar z-2 bg-dark navbar-expand-lg w-100">
     <div class="container d-flex justify-content-between">
       <a class="navbar-brand text-light" routerLink="/">StockApp</a>
@@ -15,7 +15,7 @@
       </div>
     </div>
   </nav>
-  <div class="container myPortfolio">
+  <div class="container-fluid myPortfolio">
     <div
       class="header p-3 align-items-center mb-5 d-flex justify-content-between"
     >
@@ -26,11 +26,7 @@
     @if (yourStocks$ | async; as yourStocks) {
     <div class="stocks d-flex flex-wrap justify-content-between w-100">
       <ng-container *ngFor="let stock of yourStocks$ | async">
-        <app-stock
-          style="width: 600px"
-          [stock]="stock"
-          [yourStocks]="yourStocks"
-        ></app-stock>
+        <app-stock [stock]="stock" [yourStocks]="yourStocks"></app-stock>
       </ng-container>
     </div>
     }

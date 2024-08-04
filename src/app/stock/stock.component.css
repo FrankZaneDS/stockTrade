@@ -1,13 +1,10 @@
-h5 {
-  margin: 20px;
-  min-width: 30%;
-}
-.card {
-  height: 500px;
-  .card-title {
-    min-height: 50px;
-  }
-}
 p {
   text-align: justify;
+}
+.hidden {
+  display: none;
+}
+.balance {
+  text-align: center;
+  margin: 0;
 }

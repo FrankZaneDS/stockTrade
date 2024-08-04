@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
@@ -13,6 +13,13 @@ export class DataService {
   private pinhubUrl = 'https://finnhub.io/api/v1/quote';
   private finhubSearchUrl = 'https://finnhub.io/api/v1/search';
   wishlist$ = new BehaviorSubject<YourStocks[]>([]);
+
+  private modalSubject = new Subject<void>();
+  modalOpen$ = this.modalSubject.asObservable();
+
+  openModal() {
+    this.modalSubject.next();
+  }
 
   balance$ = new BehaviorSubject<number>(100000);
   yourStocks$ = new BehaviorSubject<YourStocks[]>([]);

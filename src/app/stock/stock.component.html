@@ -1,50 +1,130 @@
-@if (curentPrice$|async; as price) {
-<div class="card d-flex flex-column justify-content-evenly">
-  <div class="card-title m-2">
-    <h4 class="text-center">{{ stock.name }}</h4>
-  </div>
-  <div
-    class="card-content border-1 rounded-3 m-2 d-flex justify-content-evenly g-2 flex-wrap gap-1"
-  >
-    <h5 *ngIf="sellBtn">Quantity:{{ stock.amount | number }}</h5>
-    <p *ngIf="wishlistBtn">{{ stock.description }}</p>
-    <h5 *ngIf="sellBtn">Total Cost:{{ stock.totalCost | number }}$</h5>
-    <h5>Current Price:{{ stock.price | number }}$</h5>
-    <h5 *ngIf="sellBtn">Market Value:{{ curentValue$ | async | number }}$</h5>
-  </div>
-  <div class="btn card-img-bottom mb-2 d-flex justify-content-evenly">
-    <button
-      *ngIf="sellBtn"
-      (click)="onSellBtn(stock, price)"
-      class="w-50 btn btn-danger"
-    >
-      Sell
-    </button>
-    <button
-      (click)="onRemoveBtn(index)"
-      *ngIf="wishlistBtn"
-      class="w-25 btn btn-danger"
-    >
-      Remove
-    </button>
-    @if (yourStocks$ |async; as yourStocks) {
-    <button
-      *ngIf="wishlistBtn"
-      (click)="
-        onBuy(
-          1,
-          stock.name,
-          stock.symbol,
-          stock.price,
-          stock.wishlist,
-          yourStocks
-        )
-      "
-      class="w-25 btn btn-danger"
-    >
-      Buy
-    </button>
-    }
+@if (curentPrice$|async; as price) { @if (yourStocks$ |async; as yourStocks) {
+
+<div class="card rounded-3" style="width: 36rem">
+  <div class="card-body d-flex flex-column justify-content-center">
+    <h5 class="card-title text-center">{{ stock.name }}</h5>
+    <h6 class="card-subtitle mb-2 text-center text-muted">
+      {{ stock.symbol }}
+    </h6>
+    <div class="card-content d-flex flex-wrap justify-content-between">
+      <div class="col-5 d-flex flex-column">
+        <h5 class="text-start" *ngIf="sellBtn">
+          Quantity:{{ stock.amount | number }}
+        </h5>
+        <h5 class="text-start" *ngIf="sellBtn">
+          Total Cost:{{ stock.totalCost | number }}$
+        </h5>
+      </div>
+      <div class="col-5 d-flex flex-column">
+        <h5 *ngIf="sellBtn" class="text-end">
+          Current Price:{{ stock.price | number }}$
+        </h5>
+        <h5 class="text-end" *ngIf="sellBtn">
+          Market Value:{{ curentValue$ | async | number }}$
+        </h5>
+      </div>
+      <p *ngIf="wishlistBtn">{{ stock.description }}</p>
+      <h5 *ngIf="wishlistBtn">Current Price:{{ stock.price | number }}$</h5>
+    </div>
+    <div class="btns mt-3 d-flex justify-content-evenly">
+      <button
+        data-target="#exampleModal"
+        data-toggle="modal"
+        *ngIf="wishlistBtn"
+        class="w-25 btn btn-danger"
+      >
+        Buy
+      </button>
+
+      <button
+        data-target="#exampleModal"
+        data-toggle="modal"
+        *ngIf="sellBtn"
+        class="w-50 btn btn-danger"
+      >
+        Sell
+      </button>
+      <button
+        (click)="onRemoveBtn(index)"
+        *ngIf="wishlistBtn"
+        class="w-25 btn btn-danger"
+      >
+        Remove
+      </button>
+    </div>
   </div>
 </div>
-}
+<div
+  class="modal fade"
+  id="exampleModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" style="z-index: 10500" role="document">
+    <div class="modal-content">
+      <div class="modal-header d-flex justify-content-between">
+        <h5 class="modal-title" id="exampleModalLabel">
+          How many stocks do you want to buy?
+        </h5>
+        <h5 class="balance">{{ balance$ | async | number }}$</h5>
+      </div>
+      <div class="modal-body">
+        <input
+          *ngIf="wishlistBtn"
+          (keyup.enter)="
+            onBuy(
+              stock.name,
+              stock.symbol,
+              stock.price,
+              stock.wishlist,
+              yourStocks
+            )
+          "
+          [(ngModel)]="amount"
+          type="number"
+        />
+        <input *ngIf="sellBtn" [(ngModel)]="amount" type="number" />
+        <h5>{{ this.amount * (curentPrice$ | async) | number }}$</h5>
+        <p class="text-bg-danger" [ngClass]="{ hidden: notEnough === false }">
+          Insufficient funds.
+        </p>
+        <p class="text-bg-success" [ngClass]="{ hidden: buy === false }">
+          Succesfully purchased.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+        <button
+          (click)="
+            onBuy(
+              stock.name,
+              stock.symbol,
+              stock.price,
+              stock.wishlist,
+              yourStocks
+            )
+          "
+          *ngIf="wishlistBtn"
+          type="button"
+          class="btn btn-primary"
+        >
+          Buy
+        </button>
+        <button
+          data-dismiss="modal"
+          type="button"
+          *ngIf="sellBtn"
+          (click)="onSellBtn(stock, price)"
+          class="btn btn-danger"
+        >
+          Sell
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+} }

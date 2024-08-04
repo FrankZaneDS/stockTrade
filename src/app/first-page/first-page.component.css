@@ -88,3 +88,7 @@ h1 {
 .hidden {
   display: none;
 }
+.balance {
+  text-align: center;
+  margin: 0;
+}

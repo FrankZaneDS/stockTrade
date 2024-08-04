@@ -294,7 +294,7 @@ export class FirstPageComponent implements OnInit {
       // Inače, dodaj novu akciju
       yourStocks.push(yourStock);
     }
-    alert('Insufficient funds.');
+
     this.buy = true;
     setTimeout(() => {
       this.buy = false;
